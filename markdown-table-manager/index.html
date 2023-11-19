@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Markdown Table Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+    <!-- 查询区域 -->
+  <div class="query-section">
+    <div class="query-header" v-for="(header, index) in tableHeaders" :key="index">
+      <div class="input-group">
+        <label>{{ header }}</label>
+        <input v-model="queryValues[index]" />
+      </div>
+    </div>
+    <button @click="filterTable">Filter</button>
+  </div>
+
+    <!-- 操作区域 -->
+  <div class="actions-section">
+    <div class="buttons">
+      <button @click="addRow">Add Row</button>
+      <button @click="addColumn">Add Column</button>
+      <button @click="saveMarkdownTable">Save</button>
+    </div>
+    <div class="buttons"></div>
+  </div>
+
+  <!-- 展示区域 -->
+  <div class="display-section">
+    <table class="table">
+      <tr>
+        <th v-for="(header, index) in tableHeaders" :key="index">{{ header }}</th>
+      </tr>
+      <tr v-for="(row, rowIndex) in displayedData" :key="rowIndex">
+        <td v-for="(cell, colIndex) in row" :key="colIndex" @dblclick="editCell(rowIndex, colIndex)">
+          <input v-if="editingCell && editingCell.row === rowIndex && editingCell.col === colIndex"
+                 v-model="editedValue" @keyup.enter="saveCell(rowIndex, colIndex)" @keyup.esc="cancelEdit" />
+          <span v-else>{{ cell }}</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+    <!-- 在表格中绑定双击编辑事件 -->
+  <td v-for="(cell, colIndex) in row" :key="colIndex" @dblclick="editCell(rowIndex, colIndex)">
+    <!-- 如果是编辑状态，显示输入框供用户编辑 -->
+    <input v-if="editingCell && editingCell.row === rowIndex && editingCell.col === colIndex"
+      v-model="editedValue"
+      @keyup.enter="saveCell(rowIndex, colIndex)"  <!-- Enter 键保存 -->
+      @keyup.esc="cancelEdit"                     <!-- Esc 键取消 -->
+    />
+    <!-- 否则显示单元格内容 -->
+    <span v-else>{{ cell }}</span>
+  </td>
+
+
+
+
+  <!-- 模态框 -->
+  <div v-if="showAddLineModal" class="modal">
+    <div class="modal-content">
+<!--      <span @click="showAddLineModal = false" class="close">&times;</span>-->
+      <form @submit.prevent="saveNewLineModalData" class="form-container">
+      <table class="table">
+        <tr>
+          <th colspan="2">新增行记录</th>
+        </tr>
+        <tr v-for="(header, index) in tableHeaders" :key="index" class="form-group">
+          <td>
+            <label>{{ header }}:</label>
+          </td>
+          <td>
+             <input v-model="newLineModalData[header]" class="form-input"/>
+          </td>
+        </tr>
+      </table>
+      <div class="buttons">
+          <button type="submit">Save</button>
+          <button @click="showAddLineModal = false" class="cancel-btn">Cancel</button>
+      </div>
+
+<!--      <button type="submit">Save</button>-->
+    </form>
+    </div>
+  </div>
+
+  <!-- 新增列的模态框 -->
+  <div v-show="showAddColumnModal" class="modal">
+    <div class="modal-content">
+<!--      <span @click="showAddColumnModal = false" class="close">&times;</span>-->
+      <form @submit.prevent="saveNewColumnModalData" class="form-container">
+        <table class="table">
+        <tr>
+          <th colspan="2">新增列记录</th>
+        </tr>
+        <tr>
+          <td>
+            <label>Column Name:</label>
+          </td>
+          <td>
+             <input v-model="newColumnName" class="form-input"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Default Value:</label>
+          </td>
+          <td>
+            <input v-model="newColumnDefaultValue" class="form-input"/>
+          </td>
+        </tr>
+        </table>
+        <div class="buttons">
+          <button type="submit">Save</button>
+          <button @click="showAddColumnModal = false" class="cancel-btn">Cancel</button>
+        </div>
+<!--        <button type="submit">Save</button>-->
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>-->
+<script src="lib\vue.min.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>
