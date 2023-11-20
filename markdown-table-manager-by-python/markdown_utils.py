@@ -1,5 +1,5 @@
 import re
-
+import pandas as pd
 class MarkdownUtils:
     @staticmethod
     def align_md_table_columns(table_lines):
@@ -109,8 +109,22 @@ class MarkdownUtils:
         else:
             return False
 
+    @staticmethod
+    def convert_cvs_to_md_table(input_file, output_file):
+        """
+        将CSV转换成Markdown表格
+        :param input_file:csv文件
+        :param output_file:md文件
+        :return:
+        """
+        # 从CSV文件中读取数据
+        data = pd.read_csv(input_file)
+        # 将数据转换为Markdown格式的表格
+        markdown_table = data.to_markdown(index=False)
+        # 将Markdown格式的表格保存到文件
+        with open(output_file, 'w') as f:
+            f.write(markdown_table)
 
-#
 
 # if __name__ == "__main__":
 #     # 读取Markdown文件内容
